@@ -1,0 +1,272 @@
+학습 내용
+1. CASE 문
+   CASE를 이용해 하나의 값을 기준으로 여러 경우를 나누는 방법
+   - CASE
+   - WHEN
+   - WHEN OTHERS
+   - ENDCASE
+예를 들어 메뉴 번호나 회원 등급처럼 특정 값에 따라 다른 결과를 출력할 때 사용 가능
+
+2. IF 조건문
+   조건에 따라 서로 다른 코드를 실행하는 방법
+   - IF
+   - ELSEIF
+   - ELSE
+   - ENDIF
+   특히 여러 범위를 비교할 때 ELSEIF를 여러 번 사용 가능
+
+   IF score >= 90.
+       WRITE: 'A'.
+   ELSEIF score >= 80.
+       WRITE: 'B'.
+   ELSEIF score >= 70.
+       WRITE: 'C'.
+   ELSE.
+       WRITE: 'F'.
+   ENDIF.
+         
+3. CASE와 IF의 조합
+   CASE 안에 IF를 넣어서 조건을 단계적으로 판단하는 방법
+   예:
+   회원 등급 확인
+       ↓
+   VIP인가?
+       ↓
+   VIP라면 수량 확인
+       ↓
+   3개 이상인가?
+
+   이를 통해 하나의 조건문만 사용하는 것이 아닌 여러 조건을 조합해 프로그램의 로직을 만드는 방법 연습
+
+4. 변수 활용
+   조건문과 계산 결과를 여러 변수에 나누어 저장하는 방법 연습
+
+   사용한 주요 변수:
+    - price : 상품 가격
+    - quantity : 수량
+    - total : 총 금액
+    - discount : 기본 할인율
+    - additional_discount : 금액에 따른 추가 할인율
+    - VIP_discount : VIP 추가 할인율
+    - total_discount : 총 할인율
+    - discount_amount : 할인 금액
+    - final_total : 최종 결제 금액
+
+5. 산술 연산을 이용한 계산
+   상품 가격과 수량을 이용해 총 금액을 계산, 할인율을 이용해 할인 금액과 최종 결제 금액을 계산
+     
+   total = price * quantity.
+   discount_amount = total * total_discount / 100.
+   final_total = total - discount_amount.
+     
+6. WRITE를 이용한 결과 출력
+   문자열과 변수의 값을 함께 출력하는 방법 연습
+     
+   WRITE: '총 금액 :', total.
+   WRITE: '할인율 :', discount, '%'.
+   WRITE: '최종 결제 금액 :', final_total.
+   실습
+   실습 1 - 메뉴 선택
+   CASE를 이용하여 메뉴 번호에 따라 다른 음식이 출력되게 작성
+
+   DATA menu TYPE i.
+   menu = 3.
+
+   CASE menu.
+       WHEN 1.
+           WRITE: '김치찌개'.
+       WHEN 2.
+           WRITE: '비빔밥'.
+       WHEN 3.
+           WRITE: '돈까스'.
+       WHEN 4.
+           WRITE: '냉면'.
+   ENDCASE.
+             
+   실습 2 - 점수에 따른 등급
+   IF / ELSEIF / ELSE를 이용해 점수에 따라 등급 출력
+
+   DATA score TYPE i.
+   score = 85.
+
+   IF score >= 90.
+       WRITE: 'A'.
+   ELSEIF score >= 80.
+       WRITE: 'B'.
+   ELSEIF score >= 70.
+       WRITE: 'C'.
+   ELSE.
+       WRITE: 'F'.
+   ENDIF.
+         
+   결과 : B
+     
+   실습 3 - 구매 금액에 따른 할인
+   구매 금액에 따라 할인율이 달라지도록 작성
+
+   DATA price TYPE i.
+   DATA quantity TYPE i.
+   DATA total TYPE i.
+   DATA discount TYPE i.
+
+   price = 25000.
+   quantity = 3.
+
+   total = price * quantity.
+
+   IF total >= 70000.
+       discount = 15.
+   ELSEIF total >= 50000.
+       discount = 10.
+   ELSEIF total >= 30000.
+       discount = 5.
+   ELSE.
+       discount = 0.
+   ENDIF.
+     
+   조건
+   70,000원 이상 → 15%
+   50,000원 이상 → 10%
+   30,000원 이상 → 5%
+   그 외 → 0%
+     
+   실습 4 - 회원 등급에 따른 할인
+   CASE를 이용해 회원 등급에 따라 기본 할인율 결정
+
+   DATA grade TYPE string.
+   DATA discount TYPE i.
+
+   grade = 'GOLD'.
+
+   CASE grade.
+       WHEN 'VIP'.
+           discount = 20.
+       WHEN 'GOLD'.
+           discount = 10.
+       WHEN 'SILVER'.
+           discount = 5.
+       WHEN OTHERS.
+           discount = 0.
+   ENDCASE.
+     
+   조건
+   VIP → 20%
+   GOLD → 10%
+   SILVER → 5%
+   그 외 → 0%
+   종합 실습 - 회원 등급 + 구매 금액 + 수량에 따른 최종 결제 금액
+
+   오늘 배운 CASE, IF, ELSEIF, 변수, 산술 연산, WRITE를 모두 활용해 종합 문제를 풀었다.
+
+   조건
+   기본 할인
+   VIP → 20%
+   GOLD → 10%
+   SILVER → 5%
+   그 외 → 0%
+   구매 금액 추가 할인
+   100,000원 이상 → 10%
+   50,000원 이상 → 5%
+   50,000원 미만 → 0%
+   VIP 추가 혜택
+
+   VIP 회원이면서 수량이 3개 이상이면 추가 5% 할인
+
+   작성한 코드
+   DATA grade TYPE string.
+   DATA price TYPE i.
+   DATA quantity TYPE i.
+   DATA total TYPE i.
+   DATA discount TYPE i.
+   DATA additional_discount TYPE i.
+   DATA VIP_discount TYPE i.
+   DATA total_discount TYPE i.
+   DATA discount_amount TYPE i.
+   DATA final_total TYPE i.
+   
+   grade = 'VIP'.
+   price = 30000.
+   quantity = 4.
+   total = price * quantity.
+
+   CASE grade.
+       WHEN 'VIP'.
+           discount = 20.
+           IF quantity >= 3.
+               VIP_discount = 5.
+           ELSE.
+               VIP_discount = 0.
+           ENDIF.
+
+       WHEN 'GOLD'.
+           discount = 10.
+
+       WHEN 'SILVER'.
+           discount = 5.
+
+       WHEN OTHERS.
+           discount = 0.
+   ENDCASE.
+
+   IF total >= 100000.
+       additional_discount = 10.
+   ELSEIF total >= 50000.
+       additional_discount = 5.
+   ELSE.
+       additional_discount = 0.
+   ENDIF.
+
+   total_discount = discount + additional_discount + VIP_discount.
+
+   discount_amount = total * total_discount / 100.
+   final_total = total - discount_amount.
+
+   WRITE: '회원등급 :', grade.
+   WRITE: '상품 가격 :', price.
+   WRITE: '수량 :', quantity.
+   WRITE: '총 금액 :', total.
+   WRITE: '기본 할인율 :', discount, '%'.
+   WRITE: '금액 추가 할인율 :', additional_discount, '%'.
+   WRITE: 'VIP 추가 할인율 :', VIP_discount, '%'.
+   WRITE: '총 할인율 :', total_discount, '%'.
+   WRITE: '할인 금액 :', discount_amount.
+   WRITE: '최종 결제 금액 :', final_total.
+   실행 결과
+   회원등급 : VIP
+   상품 가격 : 30000
+   수량 : 4
+   총 금액 : 120000
+   기본 할인율 : 20 %
+   금액 추가 할인율 : 10 %
+   VIP 추가 할인율 : 5 %
+   총 할인율 : 35 %
+   할인 금액 : 42000
+   최종 결제 금액 : 78000
+     
+   오늘 배운 점
+   CASE를 이용해 특정 값에 따른 분기를 만들기 가능
+   IF / ELSEIF / ELSE를 이용해 조건과 범위를 비교 가능
+   ELSEIF를 여러 번 사용해 여러 조건을 순서대로 검사 가능
+   CASE 안에 IF를 넣어 여러 조건을 단계적으로 판단 가능
+   기본 할인율과 추가 할인율을 각각 다른 변수로 관리하면 각각의 값을 유지하면서 최종 계산에 사용 가능
+   계산 과정마다 필요한 값을 변수에 저장하면 복잡한 계산도 단계별로 나누어 처리 가능
+   조건문과 변수, 연산을 조합해 단순한 문법 연습이 아닌 실제 프로그램의 로직을 구성하는 것을 연습했다.
+
+     Day 02 핵심 정리
+   CASE
+    ├─ WHEN
+    ├─ WHEN OTHERS
+    └─ ENDCASE
+
+   IF
+    ├─ ELSEIF
+    ├─ ELSE
+    └─ ENDIF
+
+   조건 판단
+       ↓
+   변수에 값 저장
+       ↓
+   계산
+       ↓
+   최종 결과 출력
