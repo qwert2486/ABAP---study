@@ -1,0 +1,225 @@
+Day 6 - ABAP 반복문 복습 및 반복 제어
+오늘 학습한 내용
+  1. 반복문 복습
+  DO ... TIMES
+  정해진 횟수만큼 반복
+  
+  WHILE ... ENDWHILE
+  조건이 참인 동안 반복
+  반복문과 IF 조건문을 함께 사용하는 방법
+  MOD를 이용한 짝수/홀수 및 배수 판별
+  반복문에서 변수 값을 증가시키는 방법
+  DO의 반복 횟수와 실제 WRITE가 실행되는 출력 횟수가 다를 수 있다는 점
+
+2. CONTINUE
+  현재 반복의 남은 코드를 건너뛰고 다음 반복으로 이동
+  반복문 자체를 종료하는 것은 아님
+  WHILE에서 사용할 경우 반복 조건에 영향을 주는 변수의 값을 변경하지 않으면 무한 반복이 발생할 수 있음
+  IF num MOD 2 = 0.
+      num = num + 1.
+      CONTINUE.
+  ENDIF.
+  
+3. EXIT
+  현재 실행 중인 반복문 자체를 종료
+  CONTINUE와 달리 다음 반복으로 넘어가지 않고 반복문을 빠져나감
+  IF num = 7.
+      EXIT.
+  ENDIF.
+  
+4. CONTINUE와 EXIT의 차이
+  명령어	동작
+  CONTINUE	현재 반복만 건너뛰고 다음 반복 진행
+  EXIT	반복문 자체를 종료
+
+직접 작성한 코드
+1. WHILE + IF + MOD
+  짝수와 홀수를 구분하여 출력하는 코드 작성
+
+  DATA num TYPE i.
+
+  num = 1.
+
+  WHILE num <= 10.
+      IF num MOD 2 = 0.
+          WRITE : '짝수 :', num.
+      ELSE.
+          WRITE : '홀수 :', num.
+      ENDIF.
+      num = num + 1.
+  ENDWHILE.
+            
+2. WHILE + CONTINUE
+  짝수는 건너뛰고 홀수만 출력하는 코드 작성
+
+  DATA num TYPE i.
+
+  num = 1.
+
+  WHILE num <= 10.
+      IF num MOD 2 = 0.
+          num = num + 1.
+          CONTINUE.
+      ELSE.
+          WRITE : num.
+      ENDIF.
+      num = num + 1.
+  ENDWHILE.
+            
+3. DO + CONTINUE
+  특정 조건에서 CONTINUE를 사용하여 해당 반복을 건너뛰는 코드 작성
+
+  DATA num TYPE i.
+
+  num = 1.
+
+  DO 10 TIMES.
+      IF num MOD 2 = 0.
+          num = num + 1.
+          CONTINUE.
+      ENDIF.
+
+      IF num = 7.
+          EXIT.
+      ENDIF.
+
+      WRITE : / num.
+      num = num + 1.
+  ENDDO.
+        
+4. DO + CONTINUE + EXIT
+  짝수는 건너뛰고 7이 되면 반복문을 종료하도록 작성
+
+  DATA num TYPE i.
+
+  num = 1.
+
+  DO 10 TIMES.
+      IF num MOD 2 = 0.
+          num = num + 1.
+          CONTINUE.
+      ENDIF.
+
+      IF num = 7.
+          EXIT.
+      ENDIF.
+
+      WRITE : / num.
+      num = num + 1.
+  ENDDO.
+        
+5. 3의 배수 건너뛰기 + 11에서 종료
+  DATA num TYPE i.
+
+  num = 1.
+
+  DO 20 TIMES.
+      IF num MOD 3 = 0.
+          num = num + 1.
+          CONTINUE.
+      ENDIF.
+
+      IF num = 11.
+          EXIT.
+      ENDIF.
+
+      WRITE : / num.
+      num = num + 1.
+  ENDDO.
+
+  출력:
+    1
+    2
+    4
+    5
+    7
+    8
+    10
+  
+6. 짝수와 3의 배수 건너뛰기 + 13에서 종료
+  DATA num TYPE i.
+
+  num = 1.
+
+  DO 20 TIMES.
+      IF num MOD 2 = 0.
+          num = num + 1.
+          CONTINUE.
+      ENDIF.
+
+      IF num MOD 3 = 0.
+          num = num + 1.
+          CONTINUE.
+      ENDIF.
+
+      IF num = 13.
+          EXIT.
+      ENDIF.
+
+      WRITE : / num.
+      num = num + 1.
+  ENDDO.
+        
+  출력:
+
+  1
+  5 
+  7
+  11
+    
+문제 풀면서 배운 점
+1. CONTINUE 실행 전에 변수 값을 변경해야 하는 경우
+  반복문에서 CONTINUE를 사용할 때 다음 반복으로 넘어가면서 조건에 사용되는 값이 변하지 않으면 무한 반복이 발생할 수 있다
+
+  num = num + 1.
+  CONTINUE.
+    
+2. EXIT는 WRITE보다 먼저 검사해야 하는 경우가 있음
+  특정 숫자를 출력하지 않고 종료하려면:
+  IF num = 7.
+      EXIT.
+  ENDIF.
+
+  WRITE : / num.
+처럼 EXIT 조건을 WRITE보다 먼저 검사해야 한다.
+
+3. 조건의 순서가 중요
+  여러 조건을 사용하는 경우 어떤 조건을 먼저 검사하느냐에 따라 결과가 달라질 수 있음
+
+4. WRITE와 변수 증가 순서
+  WRITE : / num.
+  num = num + 1.
+  이면 현재 숫자를 출력한 후 다음 숫자로 넘어가지만,
+
+  num = num + 1.
+  WRITE : / num.
+  이면 숫자를 먼저 증가시킨 후 출력하기 때문에 예상과 다른 값이 출력될 수 있다.
+
+오늘의 핵심
+  DO
+  → 정해진 횟수만큼 반복
+
+  WHILE
+  → 조건이 참인 동안 반복
+
+  MOD
+  → 나머지를 이용하여 짝수, 홀수, 배수 등을 판단
+
+  CONTINUE
+  → 현재 반복을 건너뛰고 다음 반복
+
+  EXIT
+  → 반복문 자체를 종료
+    
+오늘의 학습 목표 달성
+- DO 반복문 복습
+- WHILE 반복문 복습
+- MOD를 이용한 조건 판단
+- CONTINUE
+- EXIT
+- CONTINUE와 EXIT의 차이 이해
+- 반복문 + 조건문 조합
+- 반복문 실행 순서 이해
+- CONTINUE 사용 시 무한 반복 가능성 이해
+- WRITE와 변수 증가 순서 이해
+- CONTINUE와 EXIT를 직접 활용한 문제 풀이
