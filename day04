@@ -1,0 +1,477 @@
+Day 4 - ABAP Internal Table
+오늘 학습한 내용
+1. Internal Table 기본
+  TYPE TABLE OF
+  여러 개의 데이터를 저장할 수 있는 Internal Table 생성
+  일반 변수와 달리 여러 개의 데이터를 하나의 테이블에 저장
+
+  DATA numbers TYPE TABLE OF i.
+  DATA num TYPE i.
+
+  APPEND
+  
+  Internal Table에 데이터를 추가
+  APPEND 10 TO numbers.
+  APPEND 20 TO numbers.
+  APPEND 30 TO numbers.
+
+  LOOP AT ... INTO
+
+  Internal Table의 데이터를 하나씩 꺼내서 처리
+  INTO 뒤의 변수에 현재 데이터가 저장됨
+  LOOP AT numbers INTO num.
+      WRITE : / num.
+  ENDLOOP.
+        
+2. LOOP AT + IF 조건문
+  반복문 안에서 IF를 사용하여 각각의 데이터에 조건을 적용할 수 있음
+  LOOP AT numbers INTO num.
+      IF num MOD 2 <> 0.
+          WRITE : / num.
+      ENDIF.
+  ENDLOOP.
+  num MOD 2 = 0 → 짝수
+  num MOD 2 <> 0 → 홀수
+  MOD를 이용하여 배수 여부도 판단 가능
+
+  예:
+    IF num MOD 3 = 0.
+        WRITE : / num.
+    ENDIF.
+    → 3의 배수만 출력
+
+3. LOOP AT + IF + ELSE / ELSEIF
+  반복문 안에서 여러 조건에 따라 다른 작업을 수행할 수 있음
+
+  LOOP AT numbers INTO num.
+      IF num MOD 3 = 0.
+          WRITE : '3의 배수 :', num.
+      ELSE.
+          WRITE : '3의 배수 아님 :', num.
+      ENDIF.
+  ENDLOOP.
+  ELSEIF를 사용해 조건을 추가할 수도 있음.
+
+  IF 조건1.
+      ...
+  ELSEIF 조건2.
+      ...
+  ELSE.
+      ...
+  ENDIF.
+            
+4. CONTINUE
+  현재 반복의 남은 코드를 건너뛰고 다음 반복으로 이동
+  반복문 자체를 종료하는 것은 아님
+  LOOP AT에서도 사용 가능
+  LOOP AT numbers INTO num.
+      IF num MOD 2 = 0.
+          CONTINUE.
+      ENDIF.
+
+      WRITE : / num.
+  ENDLOOP.
+  → 짝수인 경우 현재 반복의 WRITE를 건너뛰고 다음 데이터로 이동
+
+  CONTINUE 사용 시 주의점
+  CONTINUE가 실행되면 그 아래의 코드가 실행되지 않음
+
+  IF 조건.
+      CONTINUE.
+  ENDIF.
+
+  WRITE : / num.
+
+  조건이 참이면 WRITE까지 도달하지 않고 다음 반복으로 넘어감
+
+5. EXIT
+  현재 실행 중인 반복문 자체를 종료
+  CONTINUE와 달리 다음 반복으로 넘어가지 않음
+  LOOP AT numbers INTO num.
+
+      IF num = 25.
+          EXIT.
+      ENDIF.
+
+      WRITE : / num.
+
+  ENDLOOP.
+  → num이 25가 되는 순간 반복문 종료
+
+6. CONTINUE와 EXIT의 차이
+  명령어	동작
+  CONTINUE	현재 반복만 건너뛰고 다음 반복 진행
+  EXIT	반복문 자체를 종료
+  CONTINUE
+  현재 반복 종료
+        ↓
+  다음 반복
+
+  EXIT
+  현재 반복 종료
+        ↓
+  반복문 종료
+        
+7. MODIFY
+  Internal Table의 데이터를 수정할 때 사용
+
+  특정 INDEX 수정
+  MODIFY numbers FROM 200 INDEX 2.
+  → numbers의 2번째 데이터를 200으로 변경
+
+  LOOP AT에서 데이터 수정
+  LOOP AT numbers INTO num.
+      IF num MOD 5 = 0.
+          num = num + 3.
+          MODIFY numbers FROM num.
+      ENDIF.
+  ENDLOOP.
+  num의 값을 변경
+  MODIFY를 사용하여 변경된 값을 Internal Table에 반영
+  WHERE를 이용한 수정
+  MODIFY numbers FROM 0 WHERE table_line > 30.
+  → 30보다 큰 데이터를 모두 0으로 수정
+
+8. DELETE
+  Internal Table의 데이터를 삭제할 때 사용
+  특정 INDEX 삭제
+  DELETE numbers INDEX 2.
+  → 2번째 데이터 삭제
+
+  LOOP AT에서 현재 데이터 삭제
+  LOOP AT numbers INTO num.
+      IF num MOD 2 = 0.
+          DELETE numbers.
+      ENDIF.
+  ENDLOOP.
+  → 현재 LOOP에서 처리 중인 데이터를 삭제
+
+  WHERE를 이용한 삭제
+  DELETE numbers WHERE table_line MOD 3 = 0.
+  → 3의 배수인 데이터를 모두 삭제
+
+9. READ TABLE
+  Internal Table에서 특정 데이터를 찾을 때 사용
+
+  INDEX로 데이터 찾기
+  READ TABLE numbers INTO num INDEX 4.
+  → numbers의 4번째 데이터를 num으로 가져옴
+
+  특정 값으로 데이터 찾기
+  READ TABLE numbers INTO num WITH KEY table_line = 25.
+  → 값이 25인 데이터를 찾아 num에 저장
+
+10. sy-subrc
+  READ TABLE 실행 후 데이터 검색 결과를 확인할 때 사용
+
+  READ TABLE numbers INTO num WITH KEY table_line = 25.
+
+  IF sy-subrc = 0.
+      WRITE : / '찾았습니다 : ', num.
+  ELSE.
+      WRITE : / '데이터가 없습니다.'.
+  ENDIF.
+  sy-subrc = 0 → 데이터를 찾음
+  sy-subrc <> 0 → 데이터를 찾지 못함
+        
+11. sy-tabix
+  READ TABLE로 데이터를 찾았을 때 찾은 데이터의 INDEX를 확인할 수 있음
+
+  READ TABLE numbers INTO num WITH KEY table_line = 20.
+
+  IF sy-subrc = 0.
+      num = 200.
+      MODIFY numbers FROM num INDEX sy-tabix.
+  ENDIF.
+
+  예를 들어 20이 3번째에 있다면:
+  sy-tabix = 3 이 됨.
+
+  따라서:
+  MODIFY numbers FROM num INDEX sy-tabix.
+  를 사용하면 찾은 데이터가 있던 위치를 수정할 수 있음
+  삭제할 때도 사용할 수 있음
+
+  READ TABLE numbers INTO num WITH KEY table_line = 25.
+
+  IF sy-subrc = 0.
+      DELETE numbers INDEX sy-tabix.
+  ENDIF.
+    
+직접 작성한 코드
+1. LOOP AT + IF + MOD
+  홀수만 출력하는 코드 작성
+
+  DATA numbers TYPE TABLE OF i.
+  DATA num TYPE i.
+
+  APPEND 10 TO numbers.
+  APPEND 15 TO numbers.
+  APPEND 20 TO numbers.
+  APPEND 25 TO numbers.
+  APPEND 30 TO numbers.
+  APPEND 35 TO numbers.
+
+  LOOP AT numbers INTO num.
+      IF num MOD 2 <> 0.
+          WRITE : / num.
+      ENDIF.
+  ENDLOOP.
+            
+2. LOOP AT + IF + ELSE
+  3의 배수인지 구분하여 출력
+
+  LOOP AT numbers INTO num.
+      IF num MOD 3 = 0.
+          WRITE : '3의 배수 :', num.
+      ELSE.
+          WRITE : '3의 배수 아님 :', num.
+      ENDIF.
+  ENDLOOP.
+            
+3. LOOP AT + CONTINUE + EXIT
+  짝수는 건너뛰고 특정 값에서 반복문 종료
+  LOOP AT numbers INTO num.
+
+      IF num MOD 2 = 0.
+          CONTINUE.
+      ENDIF.
+
+      IF num = 25.
+          EXIT.
+      ENDIF.
+
+      WRITE : / num.
+  ENDLOOP.
+        
+4. MODIFY를 이용한 데이터 수정
+  5의 배수에 3을 더한 후 Internal Table에 반영
+  DATA numbers TYPE TABLE OF i.
+  DATA num TYPE i.
+
+  APPEND 5 TO numbers.
+  APPEND 10 TO numbers.
+  APPEND 15 TO numbers.
+  APPEND 20 TO numbers.
+  APPEND 25 TO numbers.
+  APPEND 30 TO numbers.
+  APPEND 35 TO numbers.
+
+  LOOP AT numbers INTO num.
+      IF num MOD 5 = 0.
+          num = num + 3.
+          MODIFY numbers FROM num.
+      ENDIF.
+  ENDLOOP.
+        
+5. DELETE를 이용한 데이터 삭제
+  3의 배수인 데이터를 삭제
+  DATA numbers TYPE TABLE OF i.
+  DATA num TYPE i.
+
+  APPEND 5 TO numbers.
+  APPEND 10 TO numbers.
+  APPEND 12 TO numbers.
+  APPEND 15 TO numbers.
+  APPEND 17 TO numbers.
+  APPEND 20 TO numbers.
+  APPEND 21 TO numbers.
+  APPEND 25 TO numbers.
+  APPEND 30 TO numbers.
+
+  DELETE numbers WHERE table_line MOD 3 = 0
+        
+6. READ TABLE + sy-subrc
+  25가 존재하는지 확인
+  READ TABLE numbers INTO num WITH KEY table_line = 25.
+
+  IF sy-subrc = 0.
+      WRITE : / '찾았습니다 : ', num.
+  ELSE.
+      WRITE : / '데이터가 없습니다.'.
+  ENDIF.
+        
+7. READ TABLE + MODIFY
+  20을 찾아서 200으로 수정
+  READ TABLE numbers INTO num WITH KEY table_line = 20.
+
+  IF sy-subrc = 0.
+      num = 200.
+      MODIFY numbers FROM num INDEX sy-tabix.
+  ELSE.
+      WRITE : / '데이터가 없습니다.'.
+  ENDIF.
+        
+8. READ TABLE + DELETE
+  25를 찾아서 삭제
+  READ TABLE numbers INTO num WITH KEY table_line = 25.
+
+  IF sy-subrc = 0.
+      DELETE numbers INDEX sy-tabix.
+  ELSE.
+      WRITE : / '데이터가 없습니다.'.
+  ENDIF.
+        
+9. Internal Table 종합 문제
+  15를 150으로 수정하고 30을 삭제한 후 전체 데이터 출력
+  DATA numbers TYPE TABLE OF i.
+  DATA num TYPE i.
+
+  APPEND 5 TO numbers.
+  APPEND 10 TO numbers.
+  APPEND 15 TO numbers.
+  APPEND 20 TO numbers.
+  APPEND 25 TO numbers.
+  APPEND 30 TO numbers.
+  APPEND 35 TO numbers.
+  APPEND 40 TO numbers.
+
+  READ TABLE numbers INTO num WITH KEY table_line = 15.
+
+  IF sy-subrc = 0.
+      MODIFY numbers FROM 150 INDEX sy-tabix.
+  ENDIF.
+
+  READ TABLE numbers INTO num WITH KEY table_line = 30.
+
+  IF sy-subrc = 0.
+      DELETE numbers INDEX sy-tabix.
+  ENDIF.
+
+  LOOP AT numbers INTO num.
+      WRITE : / num.
+  ENDLOOP.
+  출력:
+        5
+        10
+        150
+        20
+        25
+        35
+        40
+          
+문제 풀면서 배운 점
+1. LOOP AT에서 INTO의 역할
+  LOOP AT numbers INTO num.
+  numbers → Internal Table
+  num → 현재 반복에서 가져온 데이터를 저장하는 변수
+
+  따라서 LOOP가 한 번 실행될 때마다 num의 값이 바뀜
+
+2. CONTINUE가 실행되면 아래 코드는 실행되지 않음
+  IF 조건.
+      CONTINUE.
+  ENDIF.
+
+  WRITE : / num.
+  조건이 참이면 CONTINUE가 실행되고 WRITE는 실행되지 않음
+  현재 반복의 남은 부분을 건너뛰고 다음 반복으로 이동한다는 점을 이해함.
+
+3. EXIT와 CONTINUE의 차이
+  CONTINUE
+  → 현재 반복만 건너뜀
+  → 다음 반복 진행
+
+  EXIT
+  → 반복문 자체를 종료
+  → 반복문 밖으로 이동
+    
+4. MODIFY는 결과를 출력하는 것과 다름
+  단순히 계산 결과만 출력한다면:
+
+  WRITE : / num + 5.
+  만으로 충분
+
+  Internal Table의 실제 데이터를 변경해서 이후에도 변경된 데이터를 사용해야 하는 경우 MODIFY가 필요
+
+5. READ TABLE은 특정 데이터를 찾는 용도
+  READ TABLE numbers INTO num WITH KEY table_line = 25.
+  → numbers에서 25를 찾아 num에 저장
+
+6. READ TABLE 후 sy-subrc 확인
+  READ TABLE ...
+
+  IF sy-subrc = 0.
+  → 찾았는지 확인
+  0 → 찾음
+  0이 아님 → 찾지 못함
+    
+7. sy-tabix는 찾은 데이터의 위치
+  READ TABLE numbers INTO num WITH KEY table_line = 25.
+  25가 4번째에 있다면:
+  sy-tabix = 4
+  따라서:
+  MODIFY numbers FROM num INDEX sy-tabix.
+  또는
+  DELETE numbers INDEX sy-tabix.
+  처럼 사용할 수 있음
+
+8. Internal Table에서 데이터의 역할을 구분해야 함
+  numbers
+  → Internal Table
+
+  num
+  → 현재 데이터를 담는 변수
+
+  sy-subrc
+  → 명령 실행 결과 확인
+
+  sy-tabix
+  → 찾은 데이터의 위치
+    
+오늘의 핵심
+  TYPE TABLE OF
+  → Internal Table 생성
+
+  APPEND
+  → 데이터 추가
+
+  LOOP AT
+  → 데이터를 하나씩 처리
+
+  READ TABLE
+  → 특정 데이터 검색
+
+  sy-subrc
+  → 검색 성공 여부 확인
+  
+  sy-tabix
+  → 검색된 데이터의 위치 확인
+
+  MODIFY
+  → 데이터 수정
+  
+  DELETE
+  → 데이터 삭제
+
+  IF / ELSE / ELSEIF
+  → 조건에 따른 처리
+
+  CONTINUE
+  → 현재 반복을 건너뛰고 다음 반복
+
+  EXIT
+  → 반복문 자체를 종료
+
+  WHERE
+  → 조건에 맞는 데이터 처리
+    
+오늘의 학습 목표 달성
+- Internal Table의 기본 구조 이해
+- TYPE TABLE OF 사용
+- APPEND 사용
+- LOOP AT ... INTO 사용
+- Internal Table에서 IF / ELSE / ELSEIF 사용
+- MOD를 이용한 조건 판단
+- CONTINUE 이해
+- EXIT 이해
+- CONTINUE와 EXIT의 차이 이해
+- MODIFY를 이용한 데이터 수정
+- DELETE를 이용한 데이터 삭제
+- WHERE를 이용한 조건부 수정 및 삭제
+- READ TABLE을 이용한 데이터 검색
+- sy-subrc를 이용한 검색 결과 확인
+- sy-tabix를 이용한 데이터 위치 확인
+- READ TABLE + MODIFY 활용
+- READ TABLE + DELETE 활용
+- Internal Table 관련 문법을 조합하여 직접 문제 풀이
