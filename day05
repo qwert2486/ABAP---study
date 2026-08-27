@@ -1,0 +1,235 @@
+전체 복습
+1. 변수 선언
+  DATA num TYPE i.
+  DATA name TYPE string.
+  DATA를 이용하여 변수 선언
+  TYPE으로 데이터 타입 지정
+  i = 정수형
+  string = 문자열
+  
+2. 값 대입
+  num = 10.
+
+  변수에 값을 저장
+
+3. 출력 — WRITE
+  WRITE : / num.
+  WRITE = 화면에 출력
+  / = 줄바꿈
+
+  문자열도 출력 가능
+  WRITE : 'Hello ABAP'.
+      
+4. 산술 연산
+  num = num + 1.
+  num = num - 1.
+  num = num * 2.
+  num = num / 2.
+
+  나머지는 MOD를 사용
+  num MOD 2
+
+  예를 들어 짝수인지 확인:
+  IF num MOD 2 = 0.
+      WRITE : '짝수'.
+  ENDIF.
+          
+5. 조건문 — IF
+  IF num > 10.
+      WRITE : '10보다 큽니다.'.
+  ELSEIF num = 10.
+      WRITE : '10입니다.'.
+  ELSE.
+      WRITE : '10보다 작습니다.'.
+  ENDIF.
+
+  조건에 따라 다른 코드를 실행
+
+6. CASE
+  여러 값에 따라 분기할 때 사용
+
+  CASE num.
+      WHEN 1.
+          WRITE : '1입니다.'.
+      WHEN 2.
+          WRITE : '2입니다.'.
+      WHEN 3.
+          WRITE : '3입니다.'.
+      WHEN OTHERS.
+          WRITE : '그 외의 값입니다.'.
+  ENDCASE.
+            
+7. DO 반복문
+  정해진 횟수만큼 반복
+
+  DO 10 TIMES.
+      WRITE : / 'Hello'.
+  ENDDO.
+
+  'Hello' 10번 반복
+
+8. WHILE 반복문
+  조건이 참인 동안 반복
+
+  num = 1.
+
+  WHILE num <= 10.
+      WRITE : / num.
+      num = num + 1.
+  ENDWHILE.
+
+  num이 10 이하인 동안 반복
+
+9. CONTINUE
+  현재 반복을 중단하고 다음 반복으로 넘어간다
+
+  DO 10 TIMES.
+
+      IF num MOD 2 = 0.
+          CONTINUE.
+      ENDIF.
+
+      WRITE : / num.
+
+  ENDDO.
+
+  특정 조건의 데이터는 건너뛸 때 사용
+
+10. EXIT
+  반복문을 완전히 종료
+
+  DO 10 TIMES.
+
+      IF num = 7.
+          EXIT.
+      ENDIF.
+
+  ENDDO.
+
+  num = 7이 되면 반복문을 종료
+
+11. Internal Table
+  여러 개의 데이터를 저장할 수 있는 테이블
+
+  DATA numbers TYPE TABLE OF i.
+  DATA num TYPE i.
+        
+12. APPEND
+  Internal Table에 데이터를 추가
+
+  APPEND 10 TO numbers.
+  APPEND 20 TO numbers.
+  APPEND 30 TO numbers.
+        
+13. LOOP AT
+  Internal Table의 데이터를 하나씩 꺼내 처리
+
+  LOOP AT numbers INTO num.
+      WRITE : / num.
+  ENDLOOP.
+        
+14. READ TABLE
+  Internal Table에서 특정 데이터를 찾는다
+
+  READ TABLE numbers INTO num
+      WITH KEY table_line = 20.
+        
+15. sy-subrc
+  명령이 정상적으로 처리되었는지 확인
+
+  IF sy-subrc = 0.
+      WRITE : '찾았습니다.'.
+  ELSE.
+      WRITE : '찾지 못했습니다.'.
+  ENDIF.
+
+  특히 READ TABLE과 함께 많이 사용
+
+  0 = 정상적으로 찾음
+  0이 아닌 값 = 찾지 못함 또는 처리 실패
+        
+16. sy-tabix
+  READ TABLE 등에서 현재 찾은 행의 위치를 나타낸다
+
+  READ TABLE numbers INTO num
+      WITH KEY table_line = 25.
+
+  IF sy-subrc = 0.
+      num = 250.
+      MODIFY numbers FROM num INDEX sy-tabix.
+  ENDIF.
+
+  25가 4번째 행에 있다면 sy-tabix는 4가 된다
+
+17. MODIFY
+
+Internal Table의 데이터를 수정한다.
+
+특정 위치 수정:
+  MODIFY numbers FROM num INDEX sy-tabix.
+
+  조건에 맞는 데이터 수정:
+
+  MODIFY numbers FROM 100 WHERE table_line > 30.
+    
+18. DELETE
+  Internal Table의 데이터를 삭제한다.
+
+  특정 위치 삭제:
+
+  DELETE numbers INDEX sy-tabix.
+
+  조건에 맞는 데이터 삭제:
+
+  DELETE numbers WHERE table_line MOD 3 = 0.
+    
+19. 오늘의 핵심 종합 흐름
+  오늘은 위의 문법들을 따로따로 외우는 게 아니라 서로 조합해서 사용하는 연습함
+
+  예를 들어:
+
+  READ TABLE numbers INTO num
+      WITH KEY table_line = 25.
+
+  IF sy-subrc = 0.
+      num = 250.
+      MODIFY numbers FROM num INDEX sy-tabix.
+  ENDIF.
+
+  여기에는
+
+  READ TABLE
+     ↓
+  sy-subrc
+     ↓
+  sy-tabix
+     ↓
+  MODIFY
+
+  가 하나의 흐름으로 연결
+
+  또한:
+
+  LOOP AT numbers INTO num.
+
+      IF num MOD 2 <> 0.
+          CONTINUE.
+      ENDIF.
+
+      WRITE : / num.
+
+  ENDLOOP.
+
+  처럼
+
+  LOOP AT
+    ↓
+  IF
+    ↓
+  MOD
+    ↓
+  CONTINUE
+    ↓
+  WRITE
+
+  도 조합해서 사용
