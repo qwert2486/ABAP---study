@@ -1,0 +1,153 @@
+오늘 학습 내용
+1. Structure (구조체)
+  서로 다른 타입의 데이터를 하나의 구조로 묶어서 관리하는 방법
+
+  TYPES : BEGIN OF ty_student,
+      id TYPE i,
+      name TYPE string,
+      score TYPE i,
+      END OF ty_student.
+
+  DATA student TYPE ty_student.
+        
+  ty_student = 구조체의 타입 이름
+  id, name, score = 구조체 안의 필드
+  student = 구조체 변수
+
+  구조체 변수의 필드는 student-id, student-name, student-score처럼 접근
+
+2. Structure + Internal Table
+  구조체를 Internal Table의 한 행으로 사용할 수 있다
+
+  DATA students TYPE TABLE OF ty_student.
+  DATA student TYPE ty_student.
+
+  학생 한 명의 데이터를 student에 저장한 후 APPEND를 사용하여 students에 추가
+
+  student-id = 101.
+  student-name = '지수'.
+  student-score = 88.
+
+  APPEND student TO students.
+
+  여러 명의 학생 데이터를 하나의 Internal Table에서 관리 가능
+
+3. LOOP AT으로 데이터 조회
+  Internal Table의 데이터를 한 행씩 가져올 수 있다
+
+  LOOP AT students INTO student.
+      WRITE : / student-id, student-name, student-score.
+  ENDLOOP.
+  students = 전체 Internal Table
+  student = 현재 가져온 한 행의 데이터
+        
+4. READ TABLE
+  Internal Table에서 특정 조건에 맞는 데이터를 검색할 수 있다
+
+  READ TABLE students INTO student WITH KEY id = 103.
+
+  검색 결과는 sy-subrc를 이용하여 확인
+
+  IF sy-subrc = 0.
+      WRITE : / '학생을 찾았습니다.'.
+  ELSE.
+      WRITE : / '학생을 찾지 못했습니다.'.
+  ENDIF.
+  sy-subrc = 0 = 검색 성공
+  sy-subrc ≠ 0 = 검색 실패
+        
+5. sy-tabix
+  READ TABLE로 데이터를 찾았을 때 해당 데이터가 Internal Table의 몇 번째 행인지 sy-tabix에 저장
+
+  이를 이용해서 특정 행을 수정하거나 삭제 가능
+
+  READ TABLE students INTO student WITH KEY id = 102.
+
+  IF sy-subrc = 0.
+      student-score = 75.
+      MODIFY students FROM student INDEX sy-tabix.
+  ENDIF.
+        
+6. MODIFY
+  Internal Table의 데이터를 수정할 때 사용
+
+  student-score = 75.
+  MODIFY students FROM student INDEX sy-tabix.
+
+  단순히 student-score의 값을 변경하는 것만으로는 student 변수의 값만 변경
+
+  따라서 실제 Internal Table에 변경사항을 반영하려면 MODIFY가 필요
+
+7. DELETE
+  특정 행을 삭제 가능
+
+  DELETE students INDEX sy-tabix.
+
+  조건에 맞는 여러 행을 한 번에 삭제 가능
+
+  DELETE students WHERE score < 80.
+
+  Structure Internal Table에서는 table_line이 아니라 실제 필드명인 score, id 등을 조건에 사용
+
+8. 지금까지 배운 문법 조합
+  각각의 문법뿐만 아니라 여러 문법을 하나의 프로그램에서 조합하는 연습
+
+  APPEND
+     ↓
+  READ TABLE
+     ↓
+  IF sy-subrc = 0
+     ↓
+  값 수정
+     ↓
+  MODIFY
+
+  또는
+
+  READ TABLE
+   ↓
+  IF sy-subrc = 0
+   ↓
+  DELETE INDEX sy-tabix
+
+  그리고
+
+  DELETE WHERE
+     ↓
+  LOOP AT
+     ↓
+  IF
+     ↓
+  MODIFY
+
+  처럼 여러 명령어를 연결해서 사용하는 방법을 연습
+
+    
+오늘의 핵심 정리
+- TYPES를 사용하여 Structure를 정의
+- Structure 안에 여러 필드를 정의
+- Structure를 Internal Table의 행 타입으로 사용
+- APPEND로 데이터를 추가
+- LOOP AT으로 Internal Table의 데이터를 한 행씩 처리
+- READ TABLE로 특정 데이터를 검색
+- sy-subrc로 검색 성공 여부를 확인
+- sy-tabix로 검색된 행의 위치를 확인
+- MODIFY로 Internal Table의 데이터를 수정
+- DELETE INDEX로 특정 행을 삭제
+- DELETE WHERE로 조건에 맞는 행을 삭제
+- Structure와 Internal Table을 결합해 간단한 데이터 관리 프로그램을 만들기
+
+    
+오늘 실습
+  학생 정보를 Structure + Internal Table로 관리하는 실습
+
+  실습 내용:
+    - 학생 데이터 추가
+    - 특정 학생 검색
+    - 검색한 학생의 점수 수정
+    - 특정 학생 삭제
+    - 조건에 따른 데이터 수정 및 삭제
+    - 존재하지 않는 학생 검색
+    - 전체 학생 데이터 출력
+
+오늘은 Structure와 Internal Table을 결합해 데이터를 추가·조회·수정·삭제하는 기본적인 데이터 관리 흐름 공부
